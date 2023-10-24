@@ -11,10 +11,16 @@ router.get("/", (req, res, next) => {
 
 //POST to Sign up
 router.post("/signup", async (req, res) => {
+  const { username, password, email } = req.body;
+
   const salt = bcrypt.genSaltSync(13);
-  const passwordHash = bcrypt.hashSync(req.body.password, salt);
+  const passwordHash = bcrypt.hashSync(password, salt);
   try {
-    const newUser = await User.create({ ...req.body, passwordHash });
+    const newUser = await User.create({
+      username,
+      password: passwordHash,
+      email,
+    });
     res.status(201).json(newUser);
   } catch (error) {
     console.log(error);
@@ -25,9 +31,11 @@ router.post("/signup", async (req, res) => {
 //POST to log in
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
+  console.log(req.body);
   const potentialUser = await User.findOne({ username });
+  console.log(potentialUser);
   if (potentialUser) {
-    if (bcrypt.compareSync(password, potentialUser.passwordHash)) {
+    if (bcrypt.compareSync(password, potentialUser.password)) {
       const authToken = jwt.sign(
         { userId: potentialUser._id },
         process.env.TOKEN_SECRET,
