@@ -26,7 +26,7 @@ const userSchema = new Schema(
       enum: ["JavaScript", "Python", "Java", "C++", "C#"],
     },
     country: { type: String },
-    level: { type: String, enum: ["Learner", "Junior", "Senior"] },
+    level: { type: [String], enum: ["Learner", "Junior", "Senior"] },
     photo: {
       type: String,
       default:
