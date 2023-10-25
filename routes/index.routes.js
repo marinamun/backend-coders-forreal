@@ -6,7 +6,7 @@ router.get("/", (req, res, next) => {
 const questionsRoutes = require("./question.routes");
 router.use("/questions", questionsRoutes);
 
-const userRoute = require(".profile.routes");
+const userRoute = require("./profile.routes");
 router.use("/users", userRoute);
 
 module.exports = router;
