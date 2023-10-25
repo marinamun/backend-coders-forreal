@@ -6,8 +6,7 @@ router.get("/", (req, res, next) => {
 const questionsRoutes = require("./question.routes");
 router.use("/questions", questionsRoutes);
 
-router.get("/profile", (req, res, next) => {
-  res.json("All good in profile");
-});
+const userRoute = require(".profile.routes");
+router.use("/users", userRoute);
 
 module.exports = router;
