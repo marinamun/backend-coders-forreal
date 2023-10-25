@@ -1,9 +1,9 @@
-const { isAuthenticated } = require("../middleware/routeGuard.middleware");
-
 const router = require("express").Router();
-
+const Question = require("../models/Question.model");
+const mongoose = require("mongoose");
+const { isAuthenticated } = require("../middleware/routeGuard.middleware");
 //To get all the questions
-router.get("/", isAuthenticated, async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   try {
     const allQuestions = await Question.find();
     res.status(201).json({ allQuestions });
@@ -14,11 +14,11 @@ router.get("/", isAuthenticated, async (req, res, next) => {
 });
 
 //To get a specific question
-router.get("/:questionId", isAuthenticated, async (req, res, next) => {
+router.get("/:questionId", async (req, res, next) => {
   const { questionId } = req.params;
   if (mongoose.isValidObjectId(questionId)) {
     try {
-      const oneQuestion = await Question.findById(questionId);
+      const oneQuestion = await Question.findById(questionId).populate("owner");
       if (oneQuestion) {
         res.status(201).json({ question: oneQuestion });
       } else {
@@ -34,9 +34,13 @@ router.get("/:questionId", isAuthenticated, async (req, res, next) => {
 });
 //To post a question
 router.post("/new", isAuthenticated, async (req, res, next) => {
+  console.log(req.body, req.payload);
   try {
-    const newQuestion = await Question.create(req.body);
-    console.log(req.body);
+    const newQuestion = await Question.create({
+      ...req.body,
+      owner: req.payload.userId,
+    });
+
     res.status(201).json({ question: newQuestion });
   } catch (error) {
     console.log(error);
@@ -45,7 +49,7 @@ router.post("/new", isAuthenticated, async (req, res, next) => {
 });
 
 //To edit a question card
-router.put("/:questionId", isAuthenticated, async (req, res, next) => {
+router.put("/:questionId", async (req, res, next) => {
   const { questionId } = req.params;
   try {
     const updateQuestion = await Question.findByIdAndUpdate(
@@ -63,7 +67,7 @@ router.put("/:questionId", isAuthenticated, async (req, res, next) => {
 });
 
 //To delete a question
-router.delete("/:questionId", isAuthenticated, async (req, res, next) => {
+router.delete("/:questionId", async (req, res, next) => {
   const { questionId } = req.params;
   try {
     await Question.findByIdAndDelete(questionId);
