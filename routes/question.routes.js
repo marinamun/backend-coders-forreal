@@ -33,7 +33,7 @@ router.get("/:questionId", async (req, res, next) => {
   }
 });
 //To post a question
-const uploader = require("../middlewares/cloudinary.config.js");
+const uploader = require("../middleware/cloudinary.config.js");
 
 router.post(
   "/new",
@@ -42,6 +42,9 @@ router.post(
   async (req, res, next) => {
     console.log(req.body, req.payload);
     console.log("file is: ", req.file);
+    if (!req.file) {
+      console.log("there was an error uploading the file");
+    }
 
     try {
       const newQuestion = await Question.create({
