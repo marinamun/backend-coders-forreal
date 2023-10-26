@@ -33,20 +33,32 @@ router.get("/:questionId", async (req, res, next) => {
   }
 });
 //To post a question
-router.post("/new", isAuthenticated, async (req, res, next) => {
-  console.log(req.body, req.payload);
-  try {
-    const newQuestion = await Question.create({
-      ...req.body,
-      owner: req.payload.userId,
-    });
+const uploader = require("../middleware/cloudinary.config.js");
 
-    res.status(201).json({ question: newQuestion });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error });
+router.post(
+  "/new",
+  uploader.single("imageUrl"),
+  isAuthenticated,
+  async (req, res, next) => {
+    console.log(req.body, req.payload);
+    console.log("file is: ", req.file);
+    if (!req.file) {
+      console.log("there was an error uploading the file");
+    }
+
+    try {
+      const newQuestion = await Question.create({
+        ...req.body,
+        owner: req.payload.userId,
+      });
+
+      res.status(201).json({ question: newQuestion });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error });
+    }
   }
-});
+);
 
 //To edit a question card
 router.put("/:questionId", async (req, res, next) => {
