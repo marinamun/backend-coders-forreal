@@ -2,6 +2,10 @@ const router = require('express').Router()
 const User = require('../models/User.model')
 const mongoose = require("mongoose");
 
+router.get('/', async (req,res) => {
+  res.status(200).json()
+})
+
 router.get('/:userId', async (req, res) => {
     const { userId } = req.params;
   if (mongoose.isValidObjectId(userId)) {
@@ -28,9 +32,8 @@ router.put('/:userId', async (req, res) => {
 if (mongoose.isValidObjectId(userId)) {
     try {
       const updatedUser = await User.findByIdAndUpdate(userId, req.body, {new: true})
+      console.log(updatedUser)
       if (updatedUser) {
-          const user = oneUser._doc
-          delete user.password
           res.status(200).json({ user: updatedUser });
       } 
     }  catch (error) {
