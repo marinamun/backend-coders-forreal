@@ -52,6 +52,7 @@ router.post(
       const newQuestion = await Question.create({
         ...req.body,
         owner: req.payload.userId,
+        image: req.file.path,
       });
 
       res.status(201).json({ question: newQuestion });
