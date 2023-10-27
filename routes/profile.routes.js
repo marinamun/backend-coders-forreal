@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const User = require('../models/User.model')
 const mongoose = require("mongoose");
+const Question = require('../models/Question.model')
 
 router.get('/', async (req,res) => {
   res.status(200).json()
@@ -11,6 +12,7 @@ router.get('/:userId', async (req, res) => {
   if (mongoose.isValidObjectId(userId)) {
       try {
         const oneUser = await User.findById(userId)
+        console.log(oneUser)
         if (oneUser) {
             const user = oneUser._doc
             delete user.password
@@ -25,6 +27,26 @@ router.get('/:userId', async (req, res) => {
     } else {
       res.status(500).json({ message: "id seems wrong" });
     }
+});
+
+router.get('/:userId/questions', async (req, res) => {
+  const { userId } = req.params;
+if (mongoose.isValidObjectId(userId)) {
+    try {
+      const userQuestions = await Question.find({owner : userId})
+      console.log(userQuestions)
+      if (userQuestions) {
+        res.status(201).json({ userQuestions: userQuestions });
+      } else {
+        res.status(404).json({ message: "user not found" });
+      }
+    }  catch (error) {
+      console.log(error);
+      res.status(400).json({ error });
+    }
+  } else {
+    res.status(500).json({ message: "id seems wrong" });
+  }
 });
 
 router.put('/:userId', async (req, res) => {
