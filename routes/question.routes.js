@@ -60,7 +60,7 @@ router.get("/:questionId", async (req, res, next) => {
   const { questionId } = req.params;
   if (mongoose.isValidObjectId(questionId)) {
     try {
-      const oneQuestion = await Question.findById(questionId).populate("owner");
+      const oneQuestion = await Question.findById(questionId).populate("owner answers");
       if (oneQuestion) {
         res.status(201).json({ question: oneQuestion });
       } else {

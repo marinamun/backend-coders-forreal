@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const Answer = require("../models/Answer.model");
+const Question = require("../models/Question.model");
 const mongoose = require("mongoose");
 const { isAuthenticated } = require("../middleware/routeGuard.middleware");
 
@@ -42,7 +43,7 @@ router.get("/:answerId", async (req, res, next) => {
   /* const uploader = require("../middleware/cloudinary.config.js"); */
   
   router.post(
-    "/new",
+    "/:questionId/new",
     /* uploader.single("imageUrl"), */
     isAuthenticated,
     async (req, res, next) => {
@@ -53,15 +54,18 @@ router.get("/:answerId", async (req, res, next) => {
       /* if (!req.file) {
         console.log("there was an error uploading the file");
       } */
-  
+
+      console.log(req.body);
       try {
         const newAnswer = await Answer.create({
           ...req.body,
           owner: req.payload.userId,
+          question: req.params.questionId
          /*  image: req.file ? req.file.path : undefined, */
         });
-  
-        res.status(201).json({ answer: newAnswer });
+        const updatedQuestion = await Question.updateOne({_id:req.params.questionId}, {$push:{answers:[newAnswer._id]}})
+        const allAnswers = await Answer.find({question: req.params.questionId}).populate("owner question")
+        res.status(201).json({ answer: allAnswers });
       } catch (error) {
         console.log(error);
         res.status(500).json({ error });

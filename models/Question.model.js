@@ -14,7 +14,7 @@ const questionSchema = new Schema(
       type: String,
     },
 
-    answers: { type: Schema.Types.ObjectId, ref: "Answer" }
+    answers: [{ type: Schema.Types.ObjectId, ref: "Answer" }]
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`
