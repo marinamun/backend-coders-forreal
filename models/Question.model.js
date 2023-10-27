@@ -13,6 +13,8 @@ const questionSchema = new Schema(
     image: {
       type: String,
     },
+
+    answers: { type: Schema.Types.ObjectId, ref: "Answer" }
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`

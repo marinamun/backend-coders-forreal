@@ -2,6 +2,15 @@ const router = require("express").Router();
 const Question = require("../models/Question.model");
 const mongoose = require("mongoose");
 const { isAuthenticated } = require("../middleware/routeGuard.middleware");
+
+
+
+const answersRoutes = require("./answers.routes");
+router.use("/answers", answersRoutes);
+
+
+
+
 //To get all the questions
 router.get("/", async (req, res, next) => {
   try {
@@ -13,25 +22,7 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-//To get a specific question
-router.get("/:questionId", async (req, res, next) => {
-  const { questionId } = req.params;
-  if (mongoose.isValidObjectId(questionId)) {
-    try {
-      const oneQuestion = await Question.findById(questionId).populate("owner");
-      if (oneQuestion) {
-        res.status(201).json({ question: oneQuestion });
-      } else {
-        res.status(404).json({ message: "question not found" });
-      }
-    } catch (error) {
-      console.log(error);
-      res.status(400).json({ error });
-    }
-  } else {
-    res.status(500).json({ message: "id seems wrong" });
-  }
-});
+
 //To post a question
 const uploader = require("../middleware/cloudinary.config.js");
 
@@ -52,7 +43,7 @@ router.post(
       const newQuestion = await Question.create({
         ...req.body,
         owner: req.payload.userId,
-        image: req.file.path,
+        image: req.file ? req.file.path : undefined,
       });
 
       res.status(201).json({ question: newQuestion });
@@ -62,6 +53,29 @@ router.post(
     }
   }
 );
+
+
+//To get a specific question
+router.get("/:questionId", async (req, res, next) => {
+  const { questionId } = req.params;
+  if (mongoose.isValidObjectId(questionId)) {
+    try {
+      const oneQuestion = await Question.findById(questionId).populate("owner");
+      if (oneQuestion) {
+        res.status(201).json({ question: oneQuestion });
+      } else {
+        res.status(404).json({ message: "question not found" });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({ error });
+    }
+  } else {
+    res.status(500).json({ message: "id seems wrong" });
+  }
+});
+
+
 
 //To edit a question card
 router.put("/:questionId", async (req, res, next) => {
