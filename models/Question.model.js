@@ -10,7 +10,7 @@ const questionSchema = new Schema(
       type: [String],
       enum: ["JavaScript", "Python", "Java", "C++", "C#"],
     },
-    photo: {
+    image: {
       type: String,
     },
   },

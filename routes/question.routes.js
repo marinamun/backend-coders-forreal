@@ -40,8 +40,10 @@ router.post(
   uploader.single("imageUrl"),
   isAuthenticated,
   async (req, res, next) => {
-    console.log(req.body, req.payload);
-    console.log("file is: ", req.file);
+    /*console.log(req.body, req.payload);*/
+
+    console.log("HEREEE", req.body);
+    /*console.log("file is: ", req.file);*/
     if (!req.file) {
       console.log("there was an error uploading the file");
     }
