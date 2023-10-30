@@ -13,10 +13,10 @@ const app = express();
 const cors = require("cors")
 
 app.use(
-    cors({
-        origin: ["http://localhost:5173"]
-    })
-)
+  cors({
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+  })
+);
 
 // ℹ️ This function is getting exported from the config folder. It runs most pieces of middleware
 require("./config")(app);
