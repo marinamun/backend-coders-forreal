@@ -7,7 +7,7 @@ const answerSchema = new Schema(
     question: {type: Schema.Types.ObjectId, ref: "Question" },
     text: { type: String, required: [true, "Text is required."] },
     
-    photo: {
+    image: {
       type: String,
     },
   },

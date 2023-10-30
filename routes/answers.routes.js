@@ -24,6 +24,8 @@ router.get("/:answerId", async (req, res, next) => {
       try {
         const oneAnswer = await Answer.findById(answerId).populate("owner");
         if (oneAnswer) {
+          /* const user = oneQuestion._doc;
+          delete user.password; */
           res.status(201).json({ question: oneAnswer });
         } else {
           res.status(404).json({ message: "answer not found" });
@@ -40,28 +42,28 @@ router.get("/:answerId", async (req, res, next) => {
 
 
   //To post an answer
-  /* const uploader = require("../middleware/cloudinary.config.js"); */
+  const uploader = require("../middleware/cloudinary.config.js");
   
   router.post(
     "/:questionId/new",
-    /* uploader.single("imageUrl"), */
+    uploader.single("imageUrl"),
     isAuthenticated,
     async (req, res, next) => {
       /*console.log(req.body, req.payload);*/
   
-      //console.log("HOOOO", req.body);
+      console.log("HOOOO", req.body);
       /*console.log("file is: ", req.file);*/
-      /* if (!req.file) {
+      if (!req.file) {
         console.log("there was an error uploading the file");
-      } */
+      }
 
       console.log(req.body);
       try {
         const newAnswer = await Answer.create({
           ...req.body,
           owner: req.payload.userId,
-          question: req.params.questionId
-         /*  image: req.file ? req.file.path : undefined, */
+          question: req.params.questionId,
+          image: req.file ? req.file.path : undefined,
         });
         const updatedQuestion = await Question.updateOne({_id:req.params.questionId}, {$push:{answers:[newAnswer._id]}})
         const allAnswers = await Answer.find({question: req.params.questionId}).populate("owner question")
