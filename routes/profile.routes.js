@@ -58,10 +58,26 @@ router.put(
   isAuthenticated,
   async (req, res) => {
     console.log("ITSS HEREEE", req.body);
-    if (!req.file) {
-      console.log("there was an error uploading the file");
-    }
     const { userId } = req.params;
+    if (!req.file) {
+      try {
+        const updatedUser = await User.findByIdAndUpdate(
+          userId,
+          { ...req.body },
+          {
+            new: true,
+          }
+        );
+        console.log(updatedUser);
+        if (updatedUser) {
+          res.status(200).json({ user: updatedUser });
+        }
+      } catch (error) {
+        console.log(error);
+        res.status(400).json({ error });
+      }
+      console.log("there was an error uploading the file");
+    } else {
     if (mongoose.isValidObjectId(userId)) {
       try {
         const updatedUser = await User.findByIdAndUpdate(
@@ -79,9 +95,10 @@ router.put(
         console.log(error);
         res.status(400).json({ error });
       }
-    } else {
+    }else {
       res.status(500).json({ message: "id seems wrong" });
     }
+    } 
   }
 );
 
