@@ -53,12 +53,18 @@ router.get("/:answerId", async (req, res, next) => {
   
       console.log("HOOOO", req.body);
       /*console.log("file is: ", req.file);*/
-      if (!req.file) {
-        console.log("there was an error uploading the file");
-      }
-
-      console.log(req.body);
-      try {
+    
+     try {
+        if (!req.file) {
+          const newAnswer = await Answer.create({
+            ...req.body,
+            owner: req.payload.userId,
+            question: req.params.questionId,
+          });
+          const updatedQuestion = await Question.updateOne({_id:req.params.questionId}, {$push:{answers:[newAnswer._id]}})
+          const allAnswers = await Answer.find({question: req.params.questionId}).populate("owner question")
+          res.status(200).json({ answer: allAnswers });
+      } else {
         const newAnswer = await Answer.create({
           ...req.body,
           owner: req.payload.userId,
@@ -67,7 +73,8 @@ router.get("/:answerId", async (req, res, next) => {
         });
         const updatedQuestion = await Question.updateOne({_id:req.params.questionId}, {$push:{answers:[newAnswer._id]}})
         const allAnswers = await Answer.find({question: req.params.questionId}).populate("owner question")
-        res.status(201).json({ answer: allAnswers });
+        res.status(200).json({ answer: allAnswers });
+        }
       } catch (error) {
         console.log(error);
         res.status(500).json({ error });
