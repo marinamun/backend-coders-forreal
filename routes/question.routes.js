@@ -96,11 +96,11 @@ router.put("/:questionId", async (req, res, next) => {
 });
 
 //To delete a question
-router.delete("/:questionId", isAuthenticated, async (req, res, next) => {
+router.delete("/:questionId", async (req, res, next) => {
   const { questionId } = req.params;
   try {
     await Question.findByIdAndDelete(questionId);
-    res.status(200).json({message: "deleted question"});
+    res.status(200).json({ message: "deleted question" });
   } catch (error) {
     res.status(500).json({ error });
   }
