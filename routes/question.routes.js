@@ -3,13 +3,8 @@ const Question = require("../models/Question.model");
 const mongoose = require("mongoose");
 const { isAuthenticated } = require("../middleware/routeGuard.middleware");
 
-
-
 const answersRoutes = require("./answers.routes");
 router.use("/answers", answersRoutes);
-
-
-
 
 //To get all the questions
 router.get("/", async (req, res, next) => {
@@ -21,7 +16,6 @@ router.get("/", async (req, res, next) => {
     res.status(500).json({ error });
   }
 });
-
 
 //To post a question
 const uploader = require("../middleware/cloudinary.config.js");
@@ -35,18 +29,23 @@ router.post(
 
     console.log("HEREEE", req.body);
     /*console.log("file is: ", req.file);*/
-    if (!req.file) {
-      console.log("there was an error uploading the file");
-    }
 
     try {
-      const newQuestion = await Question.create({
-        ...req.body,
-        owner: req.payload.userId,
-        image: req.file ? req.file.path : undefined,
-      });
+      if (!req.file) {
+        const newQuestion = await Question.create({
+          ...req.body,
+          owner: req.payload.userId,
+        });
+        res.status(201).json({ question: newQuestion });
+      } else {
+        const newQuestion = await Question.create({
+          ...req.body,
+          owner: req.payload.userId,
+          image: req.file ? req.file.path : undefined,
+        });
 
-      res.status(201).json({ question: newQuestion });
+        res.status(201).json({ question: newQuestion });
+      }
     } catch (error) {
       console.log(error);
       res.status(500).json({ error });
@@ -54,13 +53,14 @@ router.post(
   }
 );
 
-
 //To get a specific question
 router.get("/:questionId", async (req, res, next) => {
   const { questionId } = req.params;
   if (mongoose.isValidObjectId(questionId)) {
     try {
-      const oneQuestion = await Question.findById(questionId).populate("owner answers");
+      const oneQuestion = await Question.findById(questionId).populate(
+        "owner answers"
+      );
       if (oneQuestion) {
         /* const user = oneQuestion._doc;
         delete user.password; */
@@ -76,8 +76,6 @@ router.get("/:questionId", async (req, res, next) => {
     res.status(500).json({ message: "id seems wrong" });
   }
 });
-
-
 
 //To edit a question card
 router.put("/:questionId", async (req, res, next) => {
@@ -98,7 +96,7 @@ router.put("/:questionId", async (req, res, next) => {
 });
 
 //To delete a question
-router.delete("/:questionId", async (req, res, next) => {
+router.delete("/:questionId", isAuthenticated, async (req, res, next) => {
   const { questionId } = req.params;
   try {
     await Question.findByIdAndDelete(questionId);
