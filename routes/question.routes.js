@@ -61,9 +61,10 @@ router.get("/:questionId", async (req, res, next) => {
       const oneQuestion = await Question.findById(questionId).populate(
         "owner answers"
       );
+      //to avoid returning the password to the frontend
       if (oneQuestion) {
-        /* const user = oneQuestion._doc;
-        delete user.password; */
+        const question = oneQuestion.owner._doc;
+        delete question.password;
         res.status(201).json({ question: oneQuestion });
       } else {
         res.status(404).json({ message: "question not found" });
