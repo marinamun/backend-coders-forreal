@@ -5,7 +5,12 @@ const Question = require("../models/Question.model");
 const { isAuthenticated } = require("../middleware/routeGuard.middleware");
 
 router.get("/", async (req, res) => {
-  res.status(200).json();
+  try {
+    const allUsers = await User.find();
+      res.status(200).json({allUsers});
+  } catch (error) {
+  res.status(500).json({error})    
+  }
 });
 
 router.get("/:userId", async (req, res) => {
