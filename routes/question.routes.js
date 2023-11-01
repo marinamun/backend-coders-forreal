@@ -9,7 +9,7 @@ router.use("/answers", answersRoutes);
 //To get all the questions
 router.get("/", async (req, res, next) => {
   try {
-    const allQuestions = await Question.find();
+    const allQuestions = await Question.find().populate("owner answers");
     res.status(201).json({ allQuestions });
   } catch (error) {
     console.log(error);
