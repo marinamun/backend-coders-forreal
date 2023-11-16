@@ -49,11 +49,6 @@ router.get("/:answerId", async (req, res, next) => {
     uploader.single("imageUrl"),
     isAuthenticated,
     async (req, res, next) => {
-      /*console.log(req.body, req.payload);*/
-  
-      console.log("HOOOO", req.body);
-      /*console.log("file is: ", req.file);*/
-    
      try {
         if (!req.file) {
           const newAnswer = await Answer.create({

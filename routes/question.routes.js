@@ -25,11 +25,6 @@ router.post(
   uploader.single("imageUrl"),
   isAuthenticated,
   async (req, res, next) => {
-    /*console.log(req.body, req.payload);*/
-
-    console.log("HEREEE", req.body);
-    /*console.log("file is: ", req.file);*/
-
     try {
       if (!req.file) {
         const newQuestion = await Question.create({
